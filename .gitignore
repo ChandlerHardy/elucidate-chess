@@ -1,0 +1,73 @@
+# Dependencies
+node_modules/
+**/node_modules/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+ENV/
+.venv/
+
+# Environment
+.env
+.env.local
+.env*.local
+**/.env
+.env.production
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+*.egg-info/
+.turbo/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# PostgreSQL data
+postgres_dev_data/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+*.pyc
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Docker
+*.env.docker
+
+# Vercel
+.vercel
+
+# Misc
+.cache/
+temp/
+tmp/

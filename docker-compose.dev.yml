@@ -1,0 +1,22 @@
+services:
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: elucidate-chess-dev-db
+    environment:
+      POSTGRES_DB: elucidate_chess_dev
+      POSTGRES_USER: chess_dev_user
+      POSTGRES_PASSWORD: chess_dev_password
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chess_dev_user -d elucidate_chess_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_dev_data:
+    driver: local

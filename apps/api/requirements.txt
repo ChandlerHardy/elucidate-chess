@@ -1,0 +1,33 @@
+# FastAPI & Web Framework
+fastapi==0.115.12
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+
+# GraphQL
+strawberry-graphql[fastapi]==0.285.0
+
+# Database
+sqlalchemy==2.0.37
+alembic==1.14.0
+psycopg2-binary==2.9.10
+
+# Authentication
+python-jose[cryptography]==3.3.0
+argon2-cffi==23.1.0
+passlib==1.7.4
+
+# Settings & Config
+pydantic==2.10.6
+pydantic-settings==2.7.1
+python-dotenv==1.0.1
+
+# AI & Chess
+google-generativeai==0.8.5
+stockfish==3.28.0
+python-chess==1.999
+
+# HTTP Client
+httpx==0.28.1
+
+# Utilities
+python-dateutil==2.9.0
