@@ -1,5 +1,5 @@
 {
-  "extends": "@elucidate/typescript-config/nextjs.json",
+  "extends": "@chandler-0411/elucidate-typescript-config/nextjs.json",
   "compilerOptions": {
     "paths": {
       "@/*": ["./src/*"]

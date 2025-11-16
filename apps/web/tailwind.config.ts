@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import sharedConfig from "@elucidate/tailwind-config/tailwind.config";
+import sharedConfig from "@chandler-0411/elucidate-tailwind-config/tailwind.config";
 
 const config: Config = {
   ...sharedConfig,
