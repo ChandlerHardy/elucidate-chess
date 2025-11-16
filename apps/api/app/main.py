@@ -23,7 +23,12 @@ app.add_middleware(
 # Health check endpoint
 @app.get("/chess/health")
 async def health_check():
-    return {"status": "healthy", "service": "elucidate-chess"}
+    return {
+        "status": "healthy",
+        "service": "elucidate-chess",
+        "version": "1.0.0",
+        "environment": settings.environment
+    }
 
 # GraphQL endpoint
 async def get_context():

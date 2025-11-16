@@ -299,6 +299,82 @@ When you start your next Claude Code session:
 
 ---
 
+## 🚀 Production Deployment (NEW)
+
+### Complete OCI Deployment Setup
+Based on the production-tested crooked-finger deployment pattern:
+
+#### Production Files Created:
+- ✅ **`docker-compose.backend.yml`** - Production Docker configuration
+- ✅ **`apps/api/Dockerfile`** - Optimized production container
+- ✅ **`apps/api/.env.production`** - Production environment template
+- ✅ **`deploy-backend-to-oci.sh`** - Automated OCI deployment script
+- ✅ **`restart-backend.sh`** - Quick restart utility
+
+#### Port Strategy (Same OCI Instance):
+- **elucidate-chess**: Backend 8002, Database 5434
+- **crooked-finger**: Backend 8001, Database 5433
+- **No port conflicts** ✅
+
+#### Quick Deployment:
+```bash
+# Set environment variable and deploy
+export OCI_SERVER_IP=123.45.67.89
+./deploy-backend-to-oci.sh
+
+# Or in one command:
+OCI_SERVER_IP=123.45.67.89 ./deploy-backend-to-oci.sh
+```
+
+#### What the deployment script does:
+1. ✅ Installs Docker & Docker Compose if needed
+2. ✅ Creates deployment directory structure
+3. ✅ Backs up existing deployment
+4. ✅ Syncs files (excludes node_modules, .git, etc.)
+5. ✅ Sets up production environment file
+6. ✅ Builds and starts Docker services
+7. ✅ Performs health checks
+8. ✅ Configures firewall rules
+
+#### Production URLs After Deployment:
+- **Backend**: http://your-oci-ip:8002
+- **Health Check**: http://your-oci-ip:8002/chess/health
+- **GraphQL**: http://your-oci-ip:8002/chess/graphql
+- **Database**: PostgreSQL on port 5434
+
+#### Useful Commands:
+```bash
+# Set environment variable and restart services
+export OCI_SERVER_IP=123.45.67.89
+./restart-backend.sh
+
+# Or in one command:
+OCI_SERVER_IP=123.45.67.89 ./restart-backend.sh
+
+# Check status (on OCI)
+docker-compose -f docker-compose.backend.yml ps
+
+# View logs (on OCI)
+docker-compose -f docker-compose.backend.yml logs -f
+
+# Database connection test (on OCI)
+docker exec -it elucidate-chess-db psql -U chess_user -d elucidate_chess_db
+```
+
+#### Environment Variables Required:
+```bash
+# Edit on OCI after deployment:
+/opt/elucidate-chess/apps/api/.env
+
+# Required variables:
+SECRET_KEY=your-secure-secret-key-here
+ADMIN_SECRET=your-secure-admin-secret-here
+GEMINI_API_KEY=your-gemini-api-key-here
+OPENROUTER_API_KEY=your-openrouter-api-key-here
+```
+
+---
+
 ## 🤝 Getting Help
 
 If you run into issues:

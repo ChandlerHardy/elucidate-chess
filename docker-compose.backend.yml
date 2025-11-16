@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: elucidate-chess-db
+    environment:
+      - POSTGRES_DB=elucidate_chess_db
+      - POSTGRES_USER=chess_user
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-secure_chess_password_2024}
+    volumes:
+      - chess_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chess_user -d elucidate_chess_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - elucidate-chess-network
+    ports:
+      - "5434:5432"  # Port 5434 to avoid conflict with crooked-finger (5433)
+
+  backend:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: elucidate-chess-backend
+    env_file:
+      - ./apps/api/.env
+    ports:
+      - "8002:8001"  # Port 8002 to avoid conflict with crooked-finger (8001)
+    environment:
+      - DATABASE_URL=postgresql://chess_user:${POSTGRES_PASSWORD:-secure_chess_password_2024}@postgres:5432/elucidate_chess_db
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - CORS_ORIGINS=["https://chess.elucidate.com","http://localhost:3000"]
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/chess/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - elucidate-chess-network
+    volumes:
+      - ./apps/api/logs:/app/logs
+
+volumes:
+  chess_postgres_data:
+    driver: local
+
+networks:
+  elucidate-chess-network:
+    driver: bridge
