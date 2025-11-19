@@ -2,6 +2,10 @@
 
 **Purpose:** Move from project-specific configs to user-level configs that work across all your Claude Code projects.
 
+⚠️ **IMPORTANT**: This document contains chess project examples. When implementing user-level setup, only copy UNIVERSAL components (FastAPI, frontend, error handling, etc.) - NEVER copy chess-specific skills, agents, or commands to user level.
+
+🖥️ **FreeBSD Compatibility**: MCP (Model Context Protocol) servers are not supported on FreeBSD environments. Skip all MCP-related setup sections if deploying on FreeBSD.
+
 ## 📋 Status: PARTIALLY IMPLEMENTED ✅
 
 **Date:** 2025-11-18
@@ -66,24 +70,23 @@ chmod +x ~/.claude/hooks/*.sh
 
 #### Universal Skills
 ```bash
-# Copy skills that work across projects
-cp -r /Users/chandlerhardy/repos/elucidate-chess/.claude/skills/fastapi-development ~/.claude/skills/
+# Copy skills that work across projects (examples)
+# Generic skills like fastapi-development, frontend-dev-guidelines, etc.
+# Note: Do NOT copy chess-specific skills to user level
 ```
 
 #### Universal Commands
 ```bash
-# Copy universally useful commands
-cp /Users/chandlerhardy/repos/elucidate-chess/.claude/commands/dev-docs.md ~/.claude/commands/
-cp /Users/chandlerhardy/repos/elucidate-chess/.claude/commands/dev-docs-update.md ~/.claude/commands/
-cp /Users/chandlerhardy/repos/elucidate-chess/.claude/commands/route-research-for-testing.md ~/.claude/commands/
+# Copy universally useful commands (examples)
+# Generic commands like dev-docs, dev-docs-update, route-research-for-testing, etc.
+# Note: Do NOT copy chess-specific commands to user level
 ```
 
 #### Universal Agents
 ```bash
-# Copy agents that work across project types
-cp /Users/chandlerhardy/repos/elucidate-chess/.claude/agents/frontend-error-fixer.md ~/.claude/agents/
-cp /Users/chandlerhardy/repos/elucidate-chess/.claude/agents/documentation-architect.md ~/.claude/agents/
-cp /Users/chandlerhardy/repos/elucidate-chess/.claude/agents/code-architecture-reviewer.md ~/.claude/agents/
+# Copy agents that work across project types (examples)
+# Generic agents like frontend-error-fixer, documentation-architect, code-reviewer, etc.
+# Note: Do NOT copy chess-specific agents to user level
 ```
 
 ### 3. User-Level Settings Template
@@ -131,94 +134,227 @@ Create `~/.claude/settings.json`:
 }
 ```
 
-### 4. User-Level Skill Rules
+### 4. User-Level Skill Rules (Advanced Format)
+
+⚠️ **IMPORTANT**: Use the advanced format shown below. This provides sophisticated skill activation with intent matching, content analysis, and flexible enforcement levels.
 
 Create `~/.claude/skill-rules.json`:
 ```json
 {
-  "version": "1.0",
-  "skills": [
-    {
-      "name": "fastapi-development",
-      "patterns": [
-        "fastapi", "pydantic", "dependency injection", "middleware", "orm", "alembic", "pytest"
-      ],
-      "pathPatterns": [
-        "**/*api*/**/*.py",
-        "**/backend/**/*.py",
-        "**/server/**/*.py",
-        "**/models/**/*.py",
-        "**/schemas/**/*.py",
-        "migrations/**/*",
-        "tests/**/*.py"
-      ],
-      "description": "FastAPI development patterns and best practices"
+  "version": "1.0.0",
+  "metadata": {
+    "created": "2025-11-19",
+    "environment": "user-level",
+    "compatibility": ["claude-code-v1.0+"]
+  },
+  "skills": {
+    "fastapi-development": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "FastAPI development patterns and best practices",
+      "promptTriggers": {
+        "keywords": ["fastapi", "pydantic", "dependency injection", "middleware", "orm", "alembic", "pytest"],
+        "intentPatterns": [
+          "create.*api",
+          "implement.*endpoint",
+          "setup.*fastapi",
+          "add.*middleware"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "**/*api*/**/*.py",
+          "**/backend/**/*.py",
+          "**/server/**/*.py",
+          "**/models/**/*.py",
+          "**/schemas/**/*.py"
+        ],
+        "contentSignatures": [
+          "from fastapi import",
+          "class.*BaseModel",
+          "@app\\.",
+          "Depends("
+        ]
+      }
     },
-    {
-      "name": "frontend-dev-guidelines",
-      "patterns": [
-        "react", "nextjs", "tailwind", "ui", "component", "frontend", "web", "tsx", "vue", "angular"
-      ],
-      "pathPatterns": [
-        "**/frontend/**/*.{ts,tsx,js,jsx,vue}",
-        "**/web/**/*.{ts,tsx,js,jsx}",
-        "**/src/**/*.{ts,tsx,js,jsx}",
-        "components/**/*",
-        "pages/**/*"
-      ],
-      "description": "Frontend development patterns for React, Vue, Angular"
+    "frontend-dev-guidelines": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "Frontend development patterns for React, Vue, Angular",
+      "promptTriggers": {
+        "keywords": ["react", "nextjs", "tailwind", "ui", "component", "frontend", "web", "tsx", "vue", "angular"],
+        "intentPatterns": [
+          "create.*component",
+          "implement.*react",
+          "setup.*tailwind",
+          "build.*ui"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "**/frontend/**/*.{ts,tsx,js,jsx,vue}",
+          "**/web/**/*.{ts,tsx,js,jsx}",
+          "**/src/**/*.{ts,tsx,js,jsx}"
+        ],
+        "contentSignatures": [
+          "import.*React",
+          "export default",
+          "useState|useEffect",
+          "className.*=",
+          "tailwind"
+        ]
+      }
     },
-    {
-      "name": "error-tracking",
-      "patterns": [
-        "error", "exception", "bug", "crash", "sentry", "logging", "monitoring", "debug"
-      ],
-      "pathPatterns": [
-        "**/*.{ts,tsx,py,js,java,go,rs}",
-        "*error*",
-        "*log*",
-        "*debug*"
-      ],
-      "description": "Error tracking and monitoring setup"
+    "error-tracking": {
+      "type": "observability",
+      "enforcement": "warn",
+      "priority": "critical",
+      "description": "Error tracking and monitoring setup",
+      "promptTriggers": {
+        "keywords": ["error", "exception", "bug", "crash", "sentry", "logging", "monitoring", "debug"],
+        "intentPatterns": [
+          "track.*error",
+          "monitor.*performance",
+          "setup.*logging",
+          "handle.*exception"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "**/*.{ts,tsx,py,js,java,go,rs}",
+          "*error*",
+          "*log*",
+          "*debug*"
+        ],
+        "contentSignatures": [
+          "try\\s*{",
+          "catch\\s*\\(",
+          "console\\.error",
+          "logging\\.",
+          "sentry\\."
+        ]
+      }
     },
-    {
-      "name": "route-tester",
-      "patterns": [
-        "test", "testing", "endpoint", "route", "api", "auth", "authentication", "integration"
-      ],
-      "pathPatterns": [
-        "**/api/**/*",
-        "**/routes/**/*",
-        "**/endpoints/**/*",
-        "*test*",
-        "*spec*",
-        "tests/**/*"
-      ],
-      "description": "API route testing and authentication testing"
-    },
-    {
-      "name": "database-development",
-      "patterns": [
-        "database", "sql", "nosql", "migration", "orm", "query", "schema", "index"
-      ],
-      "pathPatterns": [
-        "**/database/**/*",
-        "**/db/**/*",
-        "**/models/**/*",
-        "**/migrations/**/*",
-        "**/schema/**/*"
-      ],
-      "description": "Database development and optimization patterns"
+    "database-development": {
+      "type": "data",
+      "enforcement": "suggest",
+      "priority": "medium",
+      "description": "Database development and optimization patterns",
+      "promptTriggers": {
+        "keywords": ["database", "sql", "nosql", "migration", "orm", "query", "schema", "index"],
+        "intentPatterns": [
+          "create.*migration",
+          "optimize.*query",
+          "setup.*database",
+          "design.*schema"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "**/database/**/*",
+          "**/db/**/*",
+          "**/models/**/*",
+          "**/migrations/**/*"
+        ],
+        "contentSignatures": [
+          "CREATE TABLE",
+          "SELECT.*FROM",
+          "db\\.session",
+          "Session\\(",
+          "\\$collection"
+        ]
+      }
     }
-  ]
+  },
+  "skipMechanisms": {
+    "commentTriggers": [
+      "// @skip-skill-check",
+      "# skip-skill-check",
+      "/* skip-skill-check */"
+    ],
+    "envVars": {
+      "CLAUDE_SKIP_SKILLS": "all",
+      "CLAUDE_ENFORCEMENT_LEVEL": "suggest|warn|block"
+    },
+    "workspaceContext": {
+      "skipInTests": true,
+      "skipInDocs": true,
+      "minProjectAge": "5m" // Skip in projects newer than 5 minutes
+    }
+  },
+  "enforcementSettings": {
+    "defaultLevel": "suggest",
+    "conflictResolution": "priority",
+    "maxSuggestions": 3,
+    "requireConfirmation": {
+      "block": true,
+      "warn": false,
+      "suggest": false
+    }
+  }
 }
 ```
+
+### Understanding the Advanced Format
+
+The advanced skill rules format provides several sophisticated capabilities:
+
+#### 1. Dual Trigger System
+
+**Prompt Triggers:**
+- **Keywords**: Direct word matching (e.g., "fastapi", "react")
+- **Intent Patterns**: Regex patterns that capture user intent (e.g., "create.*api", "implement.*component")
+
+**File Triggers:**
+- **Patterns**: Glob patterns for file paths (e.g., "**/*api*/**/*.py")
+- **Content Signatures**: Regex patterns that analyze file contents (e.g., "from fastapi import")
+
+#### 2. Flexible Enforcement Levels
+
+- **suggest**: Gentle recommendation, easily ignored
+- **warn**: Highlighted recommendation with warning, allows proceeding
+- **block**: Prevents action without explicit confirmation
+
+#### 3. Priority System
+
+- **critical**: Highest precedence, overrides conflicts
+- **high**: Important skills, strong consideration
+- **medium**: Standard priority skills
+- **low**: Optional or niche skills
+
+#### 4. Skip Mechanisms
+
+**Comment Triggers:**
+```javascript
+// @skip-skill-check
+# skip-skill-check
+/* skip-skill-check */
+```
+
+**Environment Variables:**
+- `CLAUDE_SKIP_SKILLS=all`: Disable all skill checks
+- `CLAUDE_ENFORCEMENT_LEVEL=suggest|warn|block`: Override enforcement
+
+**Workspace Context:**
+- Automatic skipping in tests, documentation, and new projects
+- File size and project age limits
+
+#### 5. Performance Optimization
+
+- **Caching**: Results cached to avoid repeated scans
+- **Timeouts**: Reasonable limits for content scanning (10 seconds)
+- **Depth Limits**: Prevent scanning too deep into directory structures
+- **Conflict Resolution**: Priority-based handling of multiple matching skills
+
+This configuration enables intelligent, context-aware skill activation while maintaining developer control and system performance.
 
 ## Project-Specific vs Universal Strategy
 
 ### Keep in User Level (Universal)
 - **Core Hooks**: skill-activation, post-tool-use-tracker
-- **Universal Skills**: FastAPI, frontend, database, testing
+- **Universal Skills**: FastAPI, frontend, database, testing, error-tracking
 - **Universal Agents**: error-fixer, documentation-architect, code-reviewer
 - **Universal Commands**: dev-docs, route-research, dev-docs-update
 
@@ -227,6 +363,7 @@ Create `~/.claude/skill-rules.json`:
 - **Chess Architecture Reviewer**: Chess-specific architectural patterns
 - **AI Chess Analyst**: Chess AI quality assurance
 - **Chess Review Command**: Chess-specific architecture review
+- **Any other chess-specific tools or configurations**
 
 ## Hybrid Configuration Approach
 
@@ -361,6 +498,8 @@ This hybrid approach gives you the best of both worlds: universal tools for cons
 
 **Configuration:** `~/.mcp.json` with proper environment variables
 
+⚠️ **FreeBSD Compatibility Note**: MCP servers are not supported on FreeBSD environments. Skip MCP setup sections if deploying on FreeBSD.
+
 #### 6. Configuration Architecture ✅
 **Settings:**
 - `.claude/settings.json` - Project configuration with hooks, skills, agents
@@ -406,6 +545,8 @@ This hybrid approach gives you the best of both worlds: universal tools for cons
 - **Obsidian** provides knowledge management
 - **Proper configuration** with API keys and environment
 
+⚠️ **FreeBSD Note**: MCP integration features are not available on FreeBSD environments.
+
 ### 💡 Innovations Implemented
 
 #### 1. Chess-Specific Architecture
@@ -427,7 +568,7 @@ This hybrid approach gives you the best of both worlds: universal tools for cons
 
 #### Immediate (Post-Restart)
 1. **Test Brave Search** functionality with web-research-specialist agent
-2. **Verify MCP integration** working properly
+2. **Verify MCP integration** working properly (⚠️ Skip on FreeBSD)
 3. **Test command execution** after restart
 
 #### Future Enhancements

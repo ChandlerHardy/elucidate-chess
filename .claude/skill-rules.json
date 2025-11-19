@@ -1,81 +1,255 @@
 {
-  "version": "1.0",
-  "skills": [
-    {
-      "name": "chess-development",
-      "patterns": [
-        "chess", "stockfish", "pgn", "fen", "board", "game", "analysis", "engine", "move", "position"
-      ],
-      "pathPatterns": [
-        "apps/web/src/**/*.{ts,tsx}",
-        "apps/api/**/*.{py,ts}",
-        "*chess*",
-        "*game*",
-        "*analysis*"
-      ],
-      "description": "Chess-specific development patterns and best practices"
+  "version": "1.0.0",
+  "metadata": {
+    "created": "2025-11-19",
+    "updated": "2025-11-19",
+    "environment": "elucidate-chess-project",
+    "compatibility": ["claude-code-v1.0+"],
+    "project": "chess-development"
+  },
+  "skills": {
+    "chess-development": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "Chess-specific development patterns and best practices",
+      "promptTriggers": {
+        "keywords": ["chess", "stockfish", "pgn", "fen", "board", "game", "analysis", "engine", "move", "position", "castling", "checkmate", "opening", "endgame"],
+        "intentPatterns": [
+          "implement.*chess",
+          "create.*game.*logic",
+          "add.*chess.*engine",
+          "parse.*pgn",
+          "validate.*move",
+          "implement.*stockfish"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "apps/web/src/**/*.{ts,tsx}",
+          "apps/api/**/*.{py,ts}",
+          "*chess*",
+          "*game*",
+          "*analysis*"
+        ],
+        "contentSignatures": [
+          "stockfish",
+          "pgn.*parse",
+          "fen.*format",
+          "chess.*board",
+          "game.*state",
+          "piece.*move",
+          "validateMove",
+          "ChessEngine"
+        ]
+      }
     },
-    {
-      "name": "frontend-dev-guidelines",
-      "patterns": [
-        "react", "nextjs", "tailwind", "ui", "component", "frontend", "web", "tsx"
-      ],
-      "pathPatterns": [
-        "apps/web/**/*.{ts,tsx,css,scss}",
-        "packages/ui/**/*"
-      ],
-      "description": "React/Next.js development patterns with Tailwind CSS"
+    "frontend-dev-guidelines": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "React/Next.js development patterns with Tailwind CSS",
+      "promptTriggers": {
+        "keywords": ["react", "nextjs", "tailwind", "ui", "component", "frontend", "web", "tsx", "useEffect", "useState"],
+        "intentPatterns": [
+          "create.*component",
+          "implement.*react",
+          "setup.*tailwind",
+          "build.*ui",
+          "add.*hook",
+          "optimize.*frontend"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "apps/web/**/*.{ts,tsx,css,scss}",
+          "packages/ui/**/*"
+        ],
+        "contentSignatures": [
+          "import.*React",
+          "export default",
+          "useState|useEffect",
+          "className.*=",
+          "tailwind",
+          "@next",
+          "getStaticProps|getServerSideProps"
+        ]
+      }
     },
-    {
-      "name": "backend-dev-guidelines",
-      "patterns": [
-        "fastapi", "python", "sqlalchemy", "database", "api", "backend", "server"
-      ],
-      "pathPatterns": [
-        "apps/api/**/*.{py,ts,js}",
-        "migrations/**/*"
-      ],
-      "description": "FastAPI/Python backend development patterns"
+    "backend-dev-guidelines": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "FastAPI/Python backend development patterns",
+      "promptTriggers": {
+        "keywords": ["fastapi", "python", "sqlalchemy", "database", "api", "backend", "server", "endpoint", "pydantic"],
+        "intentPatterns": [
+          "create.*api",
+          "implement.*endpoint",
+          "setup.*fastapi",
+          "add.*middleware",
+          "create.*model"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "apps/api/**/*.{py,ts,js}",
+          "migrations/**/*"
+        ],
+        "contentSignatures": [
+          "from fastapi import",
+          "@app\\.",
+          "class.*BaseModel",
+          "Depends(",
+          "Session\\(",
+          "Base.*=|__tablename__",
+          "SQLAlchemy"
+        ]
+      }
     },
-    {
-      "name": "error-tracking",
-      "patterns": [
-        "error", "exception", "bug", "crash", "sentry", "logging", "monitoring"
-      ],
-      "pathPatterns": [
-        "**/*.{ts,tsx,py,js}",
-        "*error*",
-        "*log*"
-      ],
-      "description": "Error tracking and monitoring setup"
+    "fastapi-development": {
+      "type": "domain",
+      "enforcement": "suggest",
+      "priority": "high",
+      "description": "FastAPI development patterns and best practices",
+      "promptTriggers": {
+        "keywords": ["fastapi", "pydantic", "dependency injection", "middleware", "orm", "alembic", "pytest", "async", "endpoint"],
+        "intentPatterns": [
+          "create.*fastapi",
+          "implement.*async.*endpoint",
+          "setup.*middleware",
+          "add.*dependency.*injection",
+          "create.*pydantic.*model"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "apps/api/**/*.{py}",
+          "**/models/*.py",
+          "**/schemas/*.py",
+          "**/services/*.py",
+          "**/core/*.py",
+          "migrations/**/*",
+          "tests/**/*.py"
+        ],
+        "contentSignatures": [
+          "from fastapi import",
+          "class.*BaseModel",
+          "@app\\.|@router\\.",
+          "Depends(",
+          "async def",
+          "pytest",
+          "alembic",
+          "Query|Select"
+        ]
+      }
     },
-    {
-      "name": "route-tester",
-      "patterns": [
-        "test", "testing", "endpoint", "route", "api", "auth", "authentication"
-      ],
-      "pathPatterns": [
-        "apps/api/**/*",
-        "*test*",
-        "*spec*"
-      ],
-      "description": "API route testing and authentication testing"
+    "error-tracking": {
+      "type": "observability",
+      "enforcement": "warn",
+      "priority": "critical",
+      "description": "Error tracking and monitoring setup",
+      "promptTriggers": {
+        "keywords": ["error", "exception", "bug", "crash", "sentry", "logging", "monitoring", "debug", "trace"],
+        "intentPatterns": [
+          "track.*error",
+          "monitor.*performance",
+          "setup.*logging",
+          "handle.*exception",
+          "debug.*issue"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "**/*.{ts,tsx,py,js}",
+          "*error*",
+          "*log*"
+        ],
+        "contentSignatures": [
+          "try\\s*{",
+          "catch\\s*\\(",
+          "console\\.error",
+          "logging\\.",
+          "sentry\\.",
+          "raise.*Exception",
+          "except.*:",
+          "Error|Exception"
+        ]
+      }
     },
-    {
-      "name": "fastapi-development",
-      "patterns": [
-        "fastapi", "pydantic", "dependency injection", "middleware", "orm", "alembic", "pytest"
-      ],
-      "pathPatterns": [
-        "apps/api/**/*.{py}",
-        "**/models/*.py",
-        "**/schemas/*.py",
-        "**/services/*.py",
-        "**/core/*.py",
-        "migrations/**/*",
-        "tests/**/*.py"
-      ],
-      "description": "FastAPI development patterns and best practices"
+    "route-tester": {
+      "type": "testing",
+      "enforcement": "suggest",
+      "priority": "medium",
+      "description": "API route testing and authentication testing",
+      "promptTriggers": {
+        "keywords": ["test", "testing", "endpoint", "route", "api", "auth", "authentication", "pytest", "integration"],
+        "intentPatterns": [
+          "test.*api",
+          "create.*test",
+          "setup.*auth.*test",
+          "integration.*test",
+          "test.*endpoint"
+        ]
+      },
+      "fileTriggers": {
+        "patterns": [
+          "apps/api/**/*",
+          "*test*",
+          "*spec*"
+        ],
+        "contentSignatures": [
+          "def test_",
+          "pytest",
+          "client\\.get|client\\.post",
+          "assert.*==",
+          "fixture",
+          "@pytest",
+          "TestClient|AsyncClient"
+        ]
+      }
     }
-  ]
+  },
+  "skipMechanisms": {
+    "commentTriggers": [
+      "// @skip-skill-check",
+      "# skip-skill-check",
+      "/* skip-skill-check */",
+      "<!-- skip-skill-check -->"
+    ],
+    "envVars": {
+      "CLAUDE_SKIP_SKILLS": "all",
+      "CLAUDE_ENFORCEMENT_LEVEL": "suggest|warn|block",
+      "CLAUDE_PROJECT_TYPE": "chess"
+    },
+    "workspaceContext": {
+      "skipInTests": true,
+      "skipInDocs": true,
+      "skipInMigrations": true,
+      "minProjectAge": "5m",
+      "maxFileSize": "1MB"
+    }
+  },
+  "enforcementSettings": {
+    "defaultLevel": "suggest",
+    "conflictResolution": "priority",
+    "maxSuggestions": 3,
+    "requireConfirmation": {
+      "block": true,
+      "warn": false,
+      "suggest": false
+    },
+    "projectSpecific": {
+      "chess-development": {
+        "priorityOverride": "critical",
+        "enforcementOverride": "warn"
+      }
+    }
+  },
+  "performanceSettings": {
+    "maxFileScanDepth": 100,
+    "contentScanTimeout": "10s",
+    "cacheResults": true,
+    "cacheExpiry": "10m"
+  }
 }
