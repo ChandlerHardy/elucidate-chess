@@ -1,0 +1,16 @@
+{
+  "name": "claude-hooks",
+  "version": "1.0.0",
+  "description": "Claude Code hooks for elucidate-chess project",
+  "main": "skill-activation-prompt.ts",
+  "scripts": {
+    "skill-activation": "ts-node skill-activation-prompt.ts"
+  },
+  "dependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

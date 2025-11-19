@@ -1,0 +1,39 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/chandlerhardy/repos/elucidate-chess/.claude/hooks/skill-activation-prompt.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/chandlerhardy/repos/elucidate-chess/.claude/hooks/post-tool-use-tracker.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "skills": {
+    "autoActivation": true,
+    "skillRulesPath": "/Users/chandlerhardy/repos/elucidate-chess/.claude/skill-rules.json"
+  },
+  "agents": {
+    "directory": "/Users/chandlerhardy/repos/elucidate-chess/.claude/agents"
+  },
+  "devDocs": {
+    "directory": "/Users/chandlerhardy/repos/elucidate-chess/dev",
+    "autoUpdate": true
+  },
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+  }
+}
