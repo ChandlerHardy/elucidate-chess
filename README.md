@@ -99,6 +99,41 @@ alembic upgrade head
 
 ### Development
 
+### Claude Code Skills System
+
+This project includes an advanced **Claude Code skills system** for intelligent development assistance:
+
+#### **Enhanced UserPromptSubmit Hook**
+The UserPromptSubmit hook analyzes your requests and suggests relevant skills automatically:
+
+**Debug Example**: `"I have a bug in my React component that is crashing"`
+→ Suggests `systematic-debugging` and `error-tracking` skills
+
+**Chess Development**: `"Implement PGN parsing with Stockfish integration"`
+→ Suggests `chess-development` skill
+
+**Backend API**: `"Create FastAPI endpoints for user authentication"`
+→ Suggests `fastapi-development` skill
+
+#### **Available Skills**
+- **`chess-development`** - Chess-specific development patterns (high priority)
+- **`frontend-dev-guidelines`** - React/Next.js with Tailwind CSS (high priority)
+- **`fastapi-development`** - FastAPI/Python development patterns (high priority)
+- **`error-tracking`** - Error monitoring and debugging (critical priority)
+- **`systematic-debugging`** - Four-phase debugging methodology (critical priority)
+- **`route-tester`** - API route testing and authentication (medium priority)
+
+#### **Usage**
+```bash
+# Skills activate automatically based on your prompts
+# Or use manually:
+Skill(skill: "chess-development")
+Skill(skill: "systematic-debugging")
+Skill(skill: "error-tracking")
+```
+
+### Local Development
+
 Start all services:
 
 ```bash
