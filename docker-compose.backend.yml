@@ -19,7 +19,7 @@ services:
     networks:
       - elucidate-chess-network
     ports:
-      - "5434:5432"  # Port 5434 to avoid conflict with crooked-finger (5433)
+      - "5435:5432"  # Port 5435 for dev database
 
   backend:
     build:

@@ -49,6 +49,36 @@ class ConceptType:
     description: Optional[str]
 
 
+# Chess Engine Types
+
+@strawberry.type
+class EngineScore:
+    """Engine evaluation score"""
+    type: str  # "cp" (centipawns) or "mate"
+    value: int  # Centipawns or moves to mate
+
+
+@strawberry.type
+class BestMove:
+    """Best move from engine analysis"""
+    move: str  # UCI format (e.g., "e2e4")
+    san: str  # SAN format (e.g., "e4")
+    score: EngineScore
+    depth: int
+    pv: List[str]  # Principal variation (sequence of moves)
+    multipv: int  # MultiPV index (1 = best, 2 = second best, etc.)
+    nps: int  # Nodes per second
+
+
+@strawberry.type
+class AnalysisResult:
+    """Complete analysis result for a position"""
+    fen: str
+    best_moves: List[BestMove]
+    depth: int
+    ai_explanation: Optional[str] = None  # Gemini-generated explanation
+
+
 @strawberry.type
 class ConceptProgressType:
     id: int

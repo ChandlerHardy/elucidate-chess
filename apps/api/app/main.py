@@ -1,15 +1,41 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
+import logging
 
 from app.core.config import settings
 from app.schemas.schema import schema
+from app.services.engine import get_engine_service, shutdown_engine_service
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Elucidate Chess API",
     description="AI-powered chess analysis and learning platform",
     version="0.1.0",
 )
+
+
+# Application lifecycle events
+@app.on_event("startup")
+async def startup_event():
+    """Initialize services on application startup"""
+    logger.info("Starting Elucidate Chess API...")
+    try:
+        # Start chess engine
+        engine = await get_engine_service()
+        logger.info("Stockfish engine initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to start engine: {e}")
+        # Continue anyway - engine will be started on first request
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup services on application shutdown"""
+    logger.info("Shutting down Elucidate Chess API...")
+    await shutdown_engine_service()
+    logger.info("Engine stopped successfully")
 
 # CORS middleware
 app.add_middleware(
