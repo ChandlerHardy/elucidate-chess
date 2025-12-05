@@ -1,76 +1,58 @@
 /**
  * Engine Analysis API Service
  *
- * API client for chess engine analysis operations
+ * GraphQL client for chess engine analysis operations using Apollo Client
  */
 
-import { apiClient } from '@/lib/apiClient';
-import type { AnalysisResult, BestMove } from '../types';
+import { gql } from '@apollo/client';
+import type { AnalysisResult } from '../types';
+
+/**
+ * GraphQL query for position analysis
+ */
+export const ANALYZE_POSITION_QUERY = gql`
+    query AnalyzePosition($fen: String!, $depth: Int!, $multipv: Int!) {
+        analyzePosition(fen: $fen, depth: $depth, multipv: $multipv) {
+            fen
+            depth
+            bestMoves {
+                move
+                san
+                score {
+                    type
+                    value
+                }
+                multipv
+            }
+        }
+    }
+`;
 
 /**
  * Engine API service class
  */
 class EngineApiService {
     /**
-     * Analyze a chess position
+     * Analyze a chess position (use with Apollo Client)
+     *
+     * @example
+     * ```tsx
+     * const { data } = useQuery(ANALYZE_POSITION_QUERY, {
+     *   variables: { fen, depth: 20, multipv: 3 }
+     * });
+     * ```
      */
-    async analyzePosition(params: {
-        fen: string;
-        depth?: number;
-        multipv?: number;
-        includeAI?: boolean;
-    }): Promise<AnalysisResult> {
-        const {
-            fen,
-            depth = 20,
-            multipv = 1,
-            includeAI = false,
-        } = params;
-
-        const response = await apiClient.post('/chess/analyze', {
-            fen,
-            depth,
-            multipv,
-            includeAI,
-        });
-
-        return response.data;
-    }
+    query = ANALYZE_POSITION_QUERY;
 
     /**
-     * Get AI explanation for a position
+     * Parse GraphQL response to AnalysisResult type
      */
-    async explainPosition(fen: string, bestMoves?: BestMove[]): Promise<string> {
-        const response = await apiClient.post('/chess/explain-position', {
-            fen,
-            bestMoves,
-        });
-
-        return response.data.explanation;
-    }
-
-    /**
-     * Get quick evaluation (low depth for fast response)
-     */
-    async quickEval(fen: string): Promise<AnalysisResult> {
-        return this.analyzePosition({
-            fen,
-            depth: 10,
-            multipv: 1,
-            includeAI: false,
-        });
-    }
-
-    /**
-     * Get deep analysis (high depth, multiple lines)
-     */
-    async deepAnalysis(fen: string): Promise<AnalysisResult> {
-        return this.analyzePosition({
-            fen,
-            depth: 25,
-            multipv: 3,
-            includeAI: true,
-        });
+    parseResponse(data: any): AnalysisResult {
+        return {
+            fen: data.analyzePosition.fen,
+            depth: data.analyzePosition.depth,
+            bestMoves: data.analyzePosition.bestMoves,
+        };
     }
 }
 
