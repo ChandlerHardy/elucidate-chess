@@ -145,10 +145,11 @@ export const GameList: React.FC<GameListProps> = ({ userId, onGameSelect }) => {
       {/* Games List */}
       <div className="space-y-3">
         {games.map((game) => (
-          <div
+          <a
             key={game.id}
+            href={`/chess?gameId=${game.id}`}
             onClick={() => onGameSelect?.(game.id)}
-            className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer"
+            className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow cursor-pointer"
           >
             <div className="flex justify-between items-start mb-2">
               <div className="flex-1">
@@ -215,7 +216,7 @@ export const GameList: React.FC<GameListProps> = ({ userId, onGameSelect }) => {
             <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
               {formatDate(game.datePlayed)} • Imported {formatDate(game.createdAt)}
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </div>

@@ -12,8 +12,5 @@
   "devDocs": {
     "directory": "/Users/chandlerhardy/repos/elucidate-chess/dev",
     "autoUpdate": true
-  },
-  "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
   }
 }

@@ -8,7 +8,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Chess } from 'chess.js';
 import type { Square } from 'chess.js';
-import type { ChessMove } from '~types/chess';
+import type { ChessMove } from '@/features/chess/types';
 
 export interface UseChessGameReturn {
     /** Chess.js instance */
@@ -19,6 +19,12 @@ export interface UseChessGameReturn {
     pgn: string;
     /** Move history */
     history: ChessMove[];
+    /** Current move index (-1 = start position, 0+ = move number) */
+    currentMoveIndex: number;
+    /** Can navigate backward */
+    canGoBack: boolean;
+    /** Can navigate forward */
+    canGoForward: boolean;
     /** Is the game over? */
     isGameOver: boolean;
     /** Is the current player in check? */
@@ -41,6 +47,16 @@ export interface UseChessGameReturn {
     loadFen: (fen: string) => boolean;
     /** Load a game from PGN */
     loadPgn: (pgn: string) => boolean;
+    /** Go to specific move in history */
+    goToMove: (index: number) => void;
+    /** Go to next move */
+    nextMove: () => void;
+    /** Go to previous move */
+    previousMove: () => void;
+    /** Go to start of game */
+    goToStart: () => void;
+    /** Go to end of game */
+    goToEnd: () => void;
 }
 
 export interface UseChessGameOptions {
@@ -79,6 +95,8 @@ export const useChessGame = (options: UseChessGameOptions = {}): UseChessGameRet
     });
 
     const [updateCounter, setUpdateCounter] = useState(0);
+    const [fullPgn, setFullPgn] = useState<string>(''); // Store complete game for navigation
+    const [currentMoveIndex, setCurrentMoveIndex] = useState<number>(-1); // -1 = start, 0+ = move number
 
     // Force re-render when game state changes
     const forceUpdate = useCallback(() => {
@@ -93,6 +111,23 @@ export const useChessGame = (options: UseChessGameOptions = {}): UseChessGameRet
 
     // Get move history with FEN positions
     const history = useMemo((): ChessMove[] => {
+        // If we have a full PGN, get all moves from it
+        if (fullPgn) {
+            const tempGame = new Chess();
+            tempGame.loadPgn(fullPgn);
+            const moves = tempGame.history({ verbose: true });
+            return moves.map((move) => ({
+                from: move.from,
+                to: move.to,
+                promotion: move.promotion,
+                san: move.san,
+                lan: move.lan,
+                before: move.before,
+                after: move.after,
+            }));
+        }
+
+        // Otherwise, get moves from current game state
         const moves = game.history({ verbose: true });
         return moves.map((move) => ({
             from: move.from,
@@ -103,7 +138,7 @@ export const useChessGame = (options: UseChessGameOptions = {}): UseChessGameRet
             before: move.before,
             after: move.after,
         }));
-    }, [updateCounter]);
+    }, [updateCounter, fullPgn]);
 
     // Game state
     const isGameOver = useMemo(() => game.isGameOver(), [updateCounter]);
@@ -177,6 +212,9 @@ export const useChessGame = (options: UseChessGameOptions = {}): UseChessGameRet
         (pgn: string): boolean => {
             try {
                 game.loadPgn(pgn);
+                setFullPgn(pgn);
+                const moves = game.history();
+                setCurrentMoveIndex(moves.length - 1); // Go to end of game
                 forceUpdate();
                 return true;
             } catch {
@@ -186,11 +224,91 @@ export const useChessGame = (options: UseChessGameOptions = {}): UseChessGameRet
         [game, forceUpdate]
     );
 
+    // Navigation: Go to specific move
+    const goToMove = useCallback(
+        (index: number) => {
+            // -1 means start position (no moves made)
+            if (index === -1) {
+                game.reset();
+                setCurrentMoveIndex(-1);
+                forceUpdate();
+                return;
+            }
+
+            if (!fullPgn) return;
+
+            // Reset to start
+            game.reset();
+
+            // Load full game
+            game.loadPgn(fullPgn);
+            const moves = game.history();
+
+            // Undo moves to reach desired position
+            const movesToUndo = moves.length - index - 1;
+            for (let i = 0; i < movesToUndo; i++) {
+                game.undo();
+            }
+
+            setCurrentMoveIndex(index);
+            forceUpdate();
+        },
+        [game, fullPgn, forceUpdate]
+    );
+
+    // Navigation: Next move
+    const nextMove = useCallback(() => {
+        if (!fullPgn) return;
+
+        const tempGame = new Chess();
+        tempGame.loadPgn(fullPgn);
+        const fullMoves = tempGame.history();
+
+        if (currentMoveIndex < fullMoves.length - 1) {
+            goToMove(currentMoveIndex + 1);
+        }
+    }, [currentMoveIndex, fullPgn, goToMove]);
+
+    // Navigation: Previous move
+    const previousMove = useCallback(() => {
+        if (currentMoveIndex >= 0) {
+            goToMove(currentMoveIndex - 1);
+        }
+    }, [currentMoveIndex, goToMove]);
+
+    // Navigation: Go to start
+    const goToStart = useCallback(() => {
+        goToMove(-1);
+    }, [goToMove]);
+
+    // Navigation: Go to end
+    const goToEnd = useCallback(() => {
+        if (!fullPgn) return;
+
+        const tempGame = new Chess();
+        tempGame.loadPgn(fullPgn);
+        const moves = tempGame.history();
+        goToMove(moves.length - 1);
+    }, [fullPgn, goToMove]);
+
+    // Can navigate back/forward
+    const canGoBack = currentMoveIndex >= 0;
+    const canGoForward = useMemo(() => {
+        if (!fullPgn) return false;
+        const tempGame = new Chess();
+        tempGame.loadPgn(fullPgn);
+        const moves = tempGame.history();
+        return currentMoveIndex < moves.length - 1;
+    }, [currentMoveIndex, fullPgn]);
+
     return {
         game,
         fen,
         pgn,
         history,
+        currentMoveIndex,
+        canGoBack,
+        canGoForward,
         isGameOver,
         isCheck,
         isCheckmate,
@@ -202,5 +320,10 @@ export const useChessGame = (options: UseChessGameOptions = {}): UseChessGameRet
         reset,
         loadFen,
         loadPgn,
+        goToMove,
+        nextMove,
+        previousMove,
+        goToStart,
+        goToEnd,
     };
 };

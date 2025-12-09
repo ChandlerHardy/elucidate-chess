@@ -10,11 +10,7 @@
  */
 
 // Components
-export { ChessBoard } from './components/ChessBoard';
-export { AnalysisPanel } from './components/AnalysisPanel';
 export { AnalysisPanelTailwind } from './components/AnalysisPanelTailwind';
-export type { ChessBoardProps } from './components/ChessBoard';
-export type { AnalysisPanelProps } from './components/AnalysisPanel';
 
 // Hooks
 export { useChessGame } from './hooks/useChessGame';
@@ -29,7 +25,6 @@ export type {
 } from './hooks/useEngineAnalysis';
 
 // API
-export { chessApi } from './api/chessApi';
 export { engineApi, ANALYZE_POSITION_QUERY } from './api/engineApi';
 
 // Types

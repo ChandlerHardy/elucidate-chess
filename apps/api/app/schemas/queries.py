@@ -24,6 +24,57 @@ class Query:
         return []
 
     @strawberry.field
+    def game(
+        self,
+        gameId: int,
+        info: strawberry.Info = None
+    ) -> GameType:
+        """
+        Fetch a single game by ID
+
+        Args:
+            gameId: Game ID to fetch
+            info: Strawberry info context
+
+        Returns:
+            GameType object
+
+        Raises:
+            Exception if game not found
+        """
+        from app.database.connection import SessionLocal
+        from app.database.models import Game
+
+        db = SessionLocal()
+        try:
+            game = db.query(Game).filter(Game.id == gameId).first()
+
+            if not game:
+                raise Exception(f"Game with ID {gameId} not found")
+
+            return GameType(
+                id=game.id,
+                user_id=game.user_id,
+                pgn=game.pgn,
+                source=game.source,
+                source_url=game.source_url,
+                white_player=game.white_player,
+                black_player=game.black_player,
+                white_elo=game.white_elo,
+                black_elo=game.black_elo,
+                result=game.result,
+                event=game.event,
+                site=game.site,
+                eco_code=game.eco_code,
+                opening_name=game.opening_name,
+                move_count=game.move_count,
+                date_played=game.date_played,
+                created_at=game.created_at
+            )
+        finally:
+            db.close()
+
+    @strawberry.field
     def games(
         self,
         user_id: int,

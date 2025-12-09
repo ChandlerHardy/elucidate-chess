@@ -31,14 +31,11 @@ services:
     ports:
       - "8002:8001"  # Port 8002 to avoid conflict with crooked-finger (8001)
     environment:
-      - DATABASE_URL=postgresql://chess_user:${POSTGRES_PASSWORD:-secure_chess_password_2024}@postgres:5432/elucidate_chess_db
-      - ENVIRONMENT=production
-      - DEBUG=false
+      - DATABASE_URL=postgresql://chess_dev_user:chess_dev_password@postgres-dev:5432/elucidate_chess_dev
+      - ENVIRONMENT=development
+      - DEBUG=true
       - CORS_ORIGINS=["https://chess.elucidate.com","http://localhost:3000"]
     restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/chess/health')"]
       interval: 30s
@@ -46,9 +43,11 @@ services:
       retries: 3
       start_period: 60s
     networks:
-      - elucidate-chess-network
+      - default
     volumes:
       - ./apps/api/logs:/app/logs
+    external_links:
+      - elucidate-chess-dev-db:postgres-dev
 
 volumes:
   chess_postgres_data:
