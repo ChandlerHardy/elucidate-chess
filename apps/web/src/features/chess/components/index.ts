@@ -12,3 +12,6 @@ export type { AnalysisPanelProps } from './AnalysisPanel';
 
 export { PGNImport } from './PGNImport';
 export type { default as PGNImportProps } from './PGNImport';
+
+export { GameList } from './GameList';
+export type { default as GameListProps } from './GameList';

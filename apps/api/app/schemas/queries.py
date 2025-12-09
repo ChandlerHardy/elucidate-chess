@@ -24,9 +24,60 @@ class Query:
         return []
 
     @strawberry.field
-    def games(self) -> List[GameType]:
-        # Placeholder - will implement with database
-        return []
+    def games(
+        self,
+        user_id: int,
+        limit: int = 50,
+        offset: int = 0,
+        info: strawberry.Info = None
+    ) -> List[GameType]:
+        """
+        Fetch games for a user with pagination
+
+        Args:
+            user_id: User ID to fetch games for
+            limit: Maximum number of games to return (default: 50)
+            offset: Number of games to skip (default: 0)
+            info: Strawberry info context
+
+        Returns:
+            List of GameType objects
+        """
+        from app.database.connection import SessionLocal
+        from app.database.models import Game
+
+        db = SessionLocal()
+        try:
+            games = db.query(Game).filter(
+                Game.user_id == user_id
+            ).order_by(
+                Game.created_at.desc()
+            ).limit(limit).offset(offset).all()
+
+            return [
+                GameType(
+                    id=game.id,
+                    user_id=game.user_id,
+                    pgn=game.pgn,
+                    source=game.source,
+                    source_url=game.source_url,
+                    white_player=game.white_player,
+                    black_player=game.black_player,
+                    white_elo=game.white_elo,
+                    black_elo=game.black_elo,
+                    result=game.result,
+                    event=game.event,
+                    site=game.site,
+                    eco_code=game.eco_code,
+                    opening_name=game.opening_name,
+                    move_count=game.move_count,
+                    date_played=game.date_played,
+                    created_at=game.created_at
+                )
+                for game in games
+            ]
+        finally:
+            db.close()
 
     @strawberry.field
     def concepts(self) -> List[ConceptType]:

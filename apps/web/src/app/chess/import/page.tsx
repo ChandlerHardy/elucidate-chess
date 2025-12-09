@@ -28,12 +28,20 @@ export default function PGNImportPage() {
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Import chess games from PGN files or text
           </p>
-          <Link
-            href="/chess"
-            className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-          >
-            ← Back to Chess Board
-          </Link>
+          <div className="flex gap-3 justify-center">
+            <Link
+              href="/chess"
+              className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+            >
+              ← Back to Board
+            </Link>
+            <Link
+              href="/chess/library"
+              className="inline-block px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
+            >
+              📚 Game Library
+            </Link>
+          </div>
         </div>
 
         {/* PGN Import Component */}
