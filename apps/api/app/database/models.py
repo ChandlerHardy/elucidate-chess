@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey, Float, JSON
+from sqlalchemy import Column, Integer, String, DateTime, Text, Boolean, ForeignKey, Float, JSON, LargeBinary, Date
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
 
@@ -28,14 +28,44 @@ class Game(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    pgn = Column(Text, nullable=False)
-    source = Column(String, default="manual")  # lichess, chess.com, manual
+
+    # PGN and move data
+    pgn = Column(Text, nullable=False)  # Full PGN text
+    moves_san = Column(JSON, nullable=True)  # SAN moves: ["e4", "e5", "Nf3", ...]
+    moves_uci = Column(JSON, nullable=True)  # UCI moves: ["e2e4", "e7e5", "g1f3", ...]
+    moves_binary = Column(LargeBinary, nullable=True)  # Binary encoding (future optimization)
+
+    # Game metadata
+    event = Column(String, nullable=True, index=True)  # Tournament/event name
+    site = Column(String, nullable=True)  # Location or platform
+    round = Column(String, nullable=True)  # Round number
+    date_played = Column(Date, nullable=True, index=True)  # Game date (Date type for proper indexing)
+
+    # Players
+    white_player = Column(String, nullable=True, index=True)
+    black_player = Column(String, nullable=True, index=True)
+    white_elo = Column(Integer, nullable=True)
+    black_elo = Column(Integer, nullable=True)
+
+    # Result and opening
+    result = Column(String, nullable=True, index=True)  # 1-0, 0-1, 1/2-1/2, *
+    eco_code = Column(String, nullable=True, index=True)  # ECO opening code (e.g., "B12")
+    opening_name = Column(String, nullable=True)  # Opening name
+
+    # Position data
+    fen_start = Column(String, nullable=True)  # Starting FEN (if not standard)
+    fen_final = Column(String, nullable=True)  # Final position FEN
+    move_count = Column(Integer, default=0)  # Total half-moves
+
+    # Source tracking
+    source = Column(String, default="manual")  # lichess, chess.com, manual, imported
     source_url = Column(String, nullable=True)
-    white_player = Column(String, nullable=True)
-    black_player = Column(String, nullable=True)
-    result = Column(String, nullable=True)  # 1-0, 0-1, 1/2-1/2
-    date_played = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    time_control = Column(String, nullable=True)  # e.g., "600+0"
+    termination = Column(String, nullable=True)  # Normal, Time forfeit, etc.
+
+    # Timestamps
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relationships
     user = relationship("User", back_populates="games")

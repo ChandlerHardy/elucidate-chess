@@ -55,6 +55,14 @@ export default function ChessPage() {
                     <p className="text-gray-600 dark:text-gray-400">
                         Interactive chess board with AI-powered Stockfish analysis
                     </p>
+                    <div className="mt-4">
+                        <a
+                            href="/chess/import"
+                            className="inline-block px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors"
+                        >
+                            Import PGN Games →
+                        </a>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

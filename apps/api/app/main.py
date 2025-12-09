@@ -6,6 +6,7 @@ import logging
 from app.core.config import settings
 from app.schemas.schema import schema
 from app.services.engine import get_engine_service, shutdown_engine_service
+from app.database.connection import SessionLocal
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +58,13 @@ async def health_check():
     }
 
 # GraphQL endpoint
-async def get_context():
-    return {}
+def get_context():
+    """Provide context for GraphQL requests"""
+    db = SessionLocal()
+    try:
+        return {"db": db}
+    finally:
+        db.close()
 
 graphql_app = GraphQLRouter(schema, context_getter=get_context)
 app.include_router(graphql_app, prefix="/chess/graphql")

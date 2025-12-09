@@ -22,7 +22,14 @@ class GameType:
     source_url: Optional[str]
     white_player: Optional[str]
     black_player: Optional[str]
+    white_elo: Optional[int]
+    black_elo: Optional[int]
     result: Optional[str]
+    event: Optional[str]
+    site: Optional[str]
+    eco_code: Optional[str]
+    opening_name: Optional[str]
+    move_count: int
     date_played: Optional[datetime]
     created_at: datetime
 
@@ -88,3 +95,15 @@ class ConceptProgressType:
     times_understood: int
     mastery_level: float
     last_seen: Optional[datetime]
+
+
+# PGN Import Types
+
+@strawberry.type
+class PGNImportResult:
+    """Result of PGN import operation"""
+    success: bool
+    games_parsed: int
+    games_imported: int
+    errors: List[str]
+    games: List[GameType]
